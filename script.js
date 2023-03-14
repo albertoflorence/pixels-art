@@ -12,6 +12,9 @@ const setStorageItem = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 
+const getSelectedColor = () =>
+  document.querySelector('.selected').style.backgroundColor;
+
 const ButtonRandomColor = (saveColors) => {
   const element = document.createElement('button');
   element.id = 'button-random-color';
@@ -71,6 +74,11 @@ const Cell = (index) => {
   element.classList.add('pixel');
   element.style.backgroundColor = 'white';
   element.id = `cell-${index}`;
+
+  element.addEventListener('click', () => {
+    element.style.backgroundColor = getSelectedColor();
+  });
+
   return element;
 };
 
