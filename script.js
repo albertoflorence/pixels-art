@@ -34,6 +34,14 @@ const Color = (color) => {
   element.classList.add('color');
   element.style.backgroundColor = color;
 
+  element.addEventListener('click', () => {
+    document.querySelectorAll('.color').forEach((item) => {
+      item.classList.remove('selected');
+    });
+
+    element.classList.add('selected');
+  });
+
   return element;
 };
 
