@@ -86,3 +86,5 @@ const Board = () => {
 
 document.body.appendChild(PaletteColor());
 document.body.appendChild(Board());
+
+document.querySelector('.color').classList.add('selected');
