@@ -129,12 +129,43 @@ const ButtonClearBoard = (changeTable) => {
   return element;
 };
 
+const InputBoardSize = () => {
+  const element = document.createElement('input');
+  element.id = 'board-size';
+  element.type = 'number';
+  element.min = 1;
+  element.max = 25;
+
+  return element;
+};
+
+const ButtonVQV = (changeTable) => {
+  const element = document.createElement('button');
+  element.id = 'generate-board';
+  element.innerText = 'VQV';
+
+  element.addEventListener('click', () => {
+    const input = document.querySelector('#board-size');
+    const value = parseInt(input.value, 10);
+    if (!value || value < 1 || value > 25) {
+      window.alert('Board inválido!');
+      return;
+    }
+
+    changeTable(generateEmptyTable(value));
+  });
+
+  return element;
+};
+
 const [board, changeTable] = Board();
 
 changeTable(getStorageItem('pixelBoard') || generateEmptyTable(5));
 
 document.body.appendChild(PaletteColor());
 document.body.appendChild(ButtonClearBoard(changeTable));
+document.body.appendChild(InputBoardSize());
+document.body.appendChild(ButtonVQV(changeTable));
 document.body.appendChild(board);
 
 document.querySelector('.color').classList.add('selected');
