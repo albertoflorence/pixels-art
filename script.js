@@ -112,6 +112,7 @@ const Board = () => {
     element,
     (array) => {
       element.innerHTML = '';
+      setStorageItem('boardSize', array.length);
       createBoard(array).forEach((item) => element.appendChild(item));
     },
   ];
@@ -160,7 +161,10 @@ const ButtonVQV = (changeTable) => {
 
 const [board, changeTable] = Board();
 
-changeTable(getStorageItem('pixelBoard') || generateEmptyTable(5));
+changeTable(
+  getStorageItem('pixelBoard')
+    || generateEmptyTable(getStorageItem('boardSize') || 5),
+);
 
 document.body.appendChild(PaletteColor());
 document.body.appendChild(ButtonClearBoard(changeTable));
