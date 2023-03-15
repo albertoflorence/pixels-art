@@ -1,7 +1,7 @@
 const random = (min, max) => Math.round(Math.random() * (max - min) + min);
 
 const getRandomColor = () =>
-  `rgb(${random(0, 255)},${random(0, 255)},${random(0, 255)})`;
+  `rgb(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})`;
 
 const getStorageItem = (key) => {
   const value = localStorage.getItem(key);
@@ -73,11 +73,10 @@ const PaletteColor = () => {
   return element;
 };
 
-const Cell = (index, color, saveCellColor) => {
+const Cell = (color, saveCellColor) => {
   const element = document.createElement('div');
   element.classList.add('pixel');
   element.style.backgroundColor = color;
-  element.id = `cell-${index}`;
 
   element.addEventListener('click', () => {
     const selectedColor = getSelectedColor();
@@ -94,14 +93,11 @@ const createBoard = (table) => {
     eslint[i][j] = color;
     setStorageItem('pixelBoard', table);
   };
-  console.log(table);
   return table.map((row, i) => {
     const element = document.createElement('div');
     element.classList.add('row');
     row.forEach((color, j) => {
-      element.appendChild(
-        Cell(i * table.length + j, color, handleChangeCellColor(i, j)),
-      );
+      element.appendChild(Cell(color, handleChangeCellColor(i, j)));
     });
 
     return element;
@@ -112,17 +108,33 @@ const Board = () => {
   const element = document.createElement('div');
   element.id = 'pixel-board';
 
-  const table = getStorageItem('pixelBoard') || generateEmptyTable(5);
+  return [
+    element,
+    (array) => {
+      element.innerHTML = '';
+      createBoard(array).forEach((item) => element.appendChild(item));
+    },
+  ];
+};
 
-  createBoard(table).forEach((item) => {
-    console.log(item.children[0]);
-    return element.appendChild(item);
+const ButtonClearBoard = (changeTable) => {
+  const element = document.createElement('button');
+  element.id = 'clear-board';
+  element.innerText = 'Limpar';
+
+  element.addEventListener('click', () => {
+    changeTable(generateEmptyTable(5));
   });
 
   return element;
 };
 
+const [board, changeTable] = Board();
+
+changeTable(getStorageItem('pixelBoard') || generateEmptyTable(5));
+
 document.body.appendChild(PaletteColor());
-document.body.appendChild(Board());
+document.body.appendChild(ButtonClearBoard(changeTable));
+document.body.appendChild(board);
 
 document.querySelector('.color').classList.add('selected');
