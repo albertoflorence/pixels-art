@@ -134,7 +134,7 @@ const InputBoardSize = () => {
   element.id = 'board-size';
   element.type = 'number';
   element.min = 1;
-  element.max = 25;
+  element.max = 50;
 
   return element;
 };
@@ -147,12 +147,12 @@ const ButtonVQV = (changeTable) => {
   element.addEventListener('click', () => {
     const input = document.querySelector('#board-size');
     const value = parseInt(input.value, 10);
-    if (!value || value < 1 || value > 25) {
+    if (!value) {
       window.alert('Board inválido!');
       return;
     }
 
-    changeTable(generateEmptyTable(value));
+    changeTable(generateEmptyTable(Math.min(Math.max(value, 5), 50)));
   });
 
   return element;
