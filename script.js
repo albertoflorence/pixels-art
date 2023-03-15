@@ -15,6 +15,10 @@ const setStorageItem = (key, value) => {
 const getSelectedColor = () =>
   document.querySelector('.selected').style.backgroundColor;
 
+const generateEmptyTable = (size) =>
+  Array.from({ length: size }, () =>
+    Array.from({ length: size }, () => 'white'));
+
 const ButtonRandomColor = (saveColors) => {
   const element = document.createElement('button');
   element.id = 'button-random-color';
@@ -69,32 +73,50 @@ const PaletteColor = () => {
   return element;
 };
 
-const Cell = (index) => {
+const Cell = (index, color, saveCellColor) => {
   const element = document.createElement('div');
   element.classList.add('pixel');
-  element.style.backgroundColor = 'white';
+  element.style.backgroundColor = color;
   element.id = `cell-${index}`;
 
   element.addEventListener('click', () => {
-    element.style.backgroundColor = getSelectedColor();
+    const selectedColor = getSelectedColor();
+    element.style.backgroundColor = selectedColor;
+    saveCellColor(selectedColor);
   });
 
   return element;
 };
 
+const createBoard = (table) => {
+  const handleChangeCellColor = (i, j) => (color) => {
+    const eslint = table;
+    eslint[i][j] = color;
+    setStorageItem('pixelBoard', table);
+  };
+  console.log(table);
+  return table.map((row, i) => {
+    const element = document.createElement('div');
+    element.classList.add('row');
+    row.forEach((color, j) => {
+      element.appendChild(
+        Cell(i * table.length + j, color, handleChangeCellColor(i, j)),
+      );
+    });
+
+    return element;
+  });
+};
+
 const Board = () => {
   const element = document.createElement('div');
   element.id = 'pixel-board';
-  const rows = Array.from({ length: 5 });
-  const lines = Array.from({ length: 5 });
 
-  rows.forEach((_, rowIndex) => {
-    const row = document.createElement('div');
-    row.classList.add('row');
-    element.appendChild(row);
-    lines.forEach((__, lineIndex) => {
-      row.appendChild(Cell(rowIndex * rows.length + lineIndex));
-    });
+  const table = getStorageItem('pixelBoard') || generateEmptyTable(5);
+
+  createBoard(table).forEach((item) => {
+    console.log(item.children[0]);
+    return element.appendChild(item);
   });
 
   return element;
