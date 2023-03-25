@@ -15,9 +15,14 @@ const setStorageItem = (key, value) => {
 const getSelectedColor = () =>
   document.querySelector('.selected').style.backgroundColor;
 
-const generateEmptyTable = (size) =>
-  Array.from({ length: size }, () =>
-    Array.from({ length: size }, () => 'white'));
+const generateEmptyBoard = (size) =>
+  Array.from({ length: size }, () => 'white');
+
+const getBoardSize = () => getStorageItem('boardSize') || 25;
+
+const getBoard = (size) =>
+  getStorageItem('pixelBoard') ||
+  generateEmptyBoard(size || getBoardSize() || 25);
 
 const ButtonRandomColor = (saveColors) => {
   const element = document.createElement('button');
@@ -88,20 +93,12 @@ const Cell = (color, saveCellColor) => {
 };
 
 const createBoard = (table) => {
-  const handleChangeCellColor = (i, j) => (color) => {
+  const handleChangeCellColor = (index) => (color) => {
     const eslint = table;
-    eslint[i][j] = color;
+    eslint[index] = color;
     setStorageItem('pixelBoard', table);
   };
-  return table.map((row, i) => {
-    const element = document.createElement('div');
-    element.classList.add('row');
-    row.forEach((color, j) => {
-      element.appendChild(Cell(color, handleChangeCellColor(i, j)));
-    });
-
-    return element;
-  });
+  return table.map((color, index) => Cell(color, handleChangeCellColor(index)));
 };
 
 const Board = () => {
@@ -112,8 +109,11 @@ const Board = () => {
     element,
     (array) => {
       element.innerHTML = '';
-      setStorageItem('boardSize', array.length);
+      const size = `${Math.ceil(Math.sqrt(array.length) * 42)}px`;
+      element.style.width = size;
       createBoard(array).forEach((item) => element.appendChild(item));
+      setStorageItem('boardSize', array.length);
+      setStorageItem('pixelBoard', array);
     },
   ];
 };
@@ -124,7 +124,7 @@ const ButtonClearBoard = (changeTable) => {
   element.innerText = 'Limpar';
 
   element.addEventListener('click', () => {
-    changeTable(generateEmptyTable(5));
+    changeTable(generateEmptyBoard(getBoardSize()));
   });
 
   return element;
@@ -153,23 +153,68 @@ const ButtonVQV = (changeTable) => {
       return;
     }
 
-    changeTable(generateEmptyTable(Math.min(Math.max(value, 5), 50)));
+    changeTable(generateEmptyBoard(Math.min(Math.max(value, 5), 50) ** 2));
   });
 
   return element;
 };
 
+const imageToArray = (image, cellSize = 1) => {
+  const array = [];
+  for (let row = 0; row < image.height; row += cellSize) {
+    for (let col = 0; col < image.width; col += cellSize) {
+      const pos = (col * image.width + row) * 4;
+      const [red, green, blue] = image.data.slice(pos, pos + 3);
+      const rgb = `rgb(${red},${green},${blue})`;
+      array.push(rgb);
+    }
+  }
+  return array;
+};
+
+const drawImagem = (url) =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.src = url;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const cellSize = Math.floor(
+        Math.sqrt((img.width * img.height) / getBoardSize())
+      );
+
+      return resolve(imageToArray(imageData, cellSize));
+    };
+  });
+
+const InputImage = (changeTable) => {
+  const element = document.createElement('input');
+  element.id = 'upload-image';
+  element.type = 'file';
+  element.addEventListener('change', () => {
+    const url = URL.createObjectURL(element.files[0]);
+    drawImagem(url).then(changeTable);
+  });
+  return element;
+};
+
+const main = document.querySelector('main');
+
 const [board, changeTable] = Board();
 
-changeTable(
-  getStorageItem('pixelBoard')
-    || generateEmptyTable(getStorageItem('boardSize') || 5),
-);
+changeTable(getBoard());
 
-document.body.appendChild(PaletteColor());
-document.body.appendChild(ButtonClearBoard(changeTable));
-document.body.appendChild(InputBoardSize());
-document.body.appendChild(ButtonVQV(changeTable));
-document.body.appendChild(board);
+main.appendChild(PaletteColor());
+main.appendChild(ButtonClearBoard(changeTable));
+main.appendChild(InputBoardSize());
+main.appendChild(ButtonVQV(changeTable));
+main.appendChild(InputImage(changeTable));
+main.appendChild(board);
 
 document.querySelector('.color').classList.add('selected');
