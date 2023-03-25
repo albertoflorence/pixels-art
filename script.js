@@ -35,8 +35,9 @@ const generateEmptyBoard = (size) =>
 const getBoardSize = () => getStorageItem('boardSize') || 25;
 
 const getBoard = (size) =>
-  getStorageItem('pixelBoard') ||
-  generateEmptyBoard(size || getBoardSize() || 25);
+  getStorageItem('pixelBoard') || generateEmptyBoard(size || getBoardSize());
+
+const calcPixelSize = (boardSize) => 500 / Math.sqrt(boardSize);
 
 const Color = (color) => {
   const element = document.createElement('div');
@@ -54,10 +55,12 @@ const Color = (color) => {
   return element;
 };
 
-const Cell = (color, saveCellColor) => {
+const Cell = (color, saveCellColor, size) => {
   const element = document.createElement('div');
   element.classList.add('pixel');
   element.style.backgroundColor = color;
+  element.style.width = size;
+  element.style.height = size;
 
   element.addEventListener('click', () => {
     const selectedColor = getSelectedColor();
@@ -69,32 +72,25 @@ const Cell = (color, saveCellColor) => {
 };
 
 const createBoard = (table) => {
-  const handleChangeCellColor = (index) => (color) => {
+  const saveCellColor = (index) => (color) => {
     const eslint = table;
     eslint[index] = color;
     setStorageItem('pixelBoard', table);
   };
-  return table.map((color, index) => Cell(color, handleChangeCellColor(index)));
+  const size = `${calcPixelSize(table.length)}px`;
+  return table.map((color, index) => Cell(color, saveCellColor(index), size));
 };
 
 const changeBoard = (array) => {
   pixelBoard.innerHTML = '';
-  const size = `${Math.ceil(Math.sqrt(array.length) * 42)}px`;
-  pixelBoard.style.width = size;
+  const numRowsCols = Math.ceil(Math.sqrt(array.length));
+  pixelBoard.style.gridTemplateRows = `repeat(${numRowsCols}, 1fr)`;
+  pixelBoard.style.gridTemplateColumns = `repeat(${numRowsCols}, 1fr)`;
+
   createBoard(array).forEach((item) => pixelBoard.appendChild(item));
   setStorageItem('boardSize', array.length);
   setStorageItem('pixelBoard', array);
 };
-
-inputBoardSize.value = Math.sqrt(getBoardSize());
-inputBoardSize.addEventListener('input', () => {
-  const value = parseInt(inputBoardSize.value, 10);
-  if (!value) {
-    window.alert('Board inválido!');
-    return;
-  }
-  changeBoard(generateEmptyBoard(Math.min(Math.max(value, 5), 50) ** 2));
-});
 
 const imageToArray = (image, cellSize = 1) => {
   const array = [];
@@ -109,7 +105,7 @@ const imageToArray = (image, cellSize = 1) => {
   return array;
 };
 
-const drawImagem = (url) =>
+const drawImagem = (url, boardSize) =>
   new Promise((resolve) => {
     const img = new Image();
     img.src = url;
@@ -123,12 +119,27 @@ const drawImagem = (url) =>
       ctx.drawImage(img, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const cellSize = Math.floor(
-        Math.sqrt((img.width * img.height) / getBoardSize())
+        Math.sqrt((img.width * img.height) / boardSize)
       );
 
       return resolve(imageToArray(imageData, cellSize));
     };
   });
+
+const handleUploadImage = (boardSize) => {
+  const url = URL.createObjectURL(inputUploadImage.files[0]);
+  drawImagem(url, boardSize).then(changeBoard);
+};
+
+inputBoardSize.addEventListener('input', () => {
+  const value = parseInt(inputBoardSize.value, 10) ** 2;
+  if (!value) {
+    window.alert('Board inválido!');
+    return;
+  }
+  if (inputUploadImage.files[0]) handleUploadImage(value);
+  else changeBoard(generateEmptyBoard(Math.min(Math.max(value, 25), 2500)));
+});
 
 buttonRandomColor.addEventListener('click', () => {
   document.querySelectorAll('.color').forEach((item, index) => {
@@ -140,17 +151,15 @@ buttonRandomColor.addEventListener('click', () => {
   });
 });
 
-colors.forEach((color) => colorPalette.appendChild(Color(color)));
-
 buttonClearBoard.addEventListener('click', () => {
   changeBoard(generateEmptyBoard(getBoardSize()));
 });
 
-inputUploadImage.addEventListener('change', () => {
-  const url = URL.createObjectURL(inputUploadImage.files[0]);
-  drawImagem(url).then(changeBoard);
-});
+inputUploadImage.addEventListener('change', () =>
+  handleUploadImage(getBoardSize())
+);
 
+inputBoardSize.value = Math.sqrt(getBoardSize());
+colors.forEach((color) => colorPalette.appendChild(Color(color)));
 changeBoard(getBoard());
-
 document.querySelector('.color').classList.add('selected');
