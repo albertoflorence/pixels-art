@@ -118,7 +118,7 @@ const drawImagem = (url, boardSize) =>
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const cellSize = Math.floor(
+      const cellSize = Math.round(
         Math.sqrt((img.width * img.height) / boardSize)
       );
 
