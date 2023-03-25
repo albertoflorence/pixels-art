@@ -137,8 +137,9 @@ inputBoardSize.addEventListener('input', () => {
     window.alert('Board inválido!');
     return;
   }
-  if (inputUploadImage.files[0]) handleUploadImage(value);
-  else changeBoard(generateEmptyBoard(Math.min(Math.max(value, 25), 2500)));
+  const size = Math.min(Math.max(value, 25), 2500);
+  if (inputUploadImage.files[0]) handleUploadImage(size);
+  else changeBoard(generateEmptyBoard(size));
 });
 
 buttonRandomColor.addEventListener('click', () => {
@@ -152,6 +153,7 @@ buttonRandomColor.addEventListener('click', () => {
 });
 
 buttonClearBoard.addEventListener('click', () => {
+  inputUploadImage.value = '';
   changeBoard(generateEmptyBoard(getBoardSize()));
 });
 
