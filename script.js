@@ -14,23 +14,15 @@ const setStorageItem = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 
-const colors = getStorageItem('colorPalette') || [
-  'black',
-  'purple',
-  'orange',
-  'green',
-];
+const colors = getStorageItem('colorPalette') || ['black', 'purple', 'orange', 'green'];
 
 const random = (min, max) => Math.round(Math.random() * (max - min) + min);
 
-const getRandomColor = () =>
-  `rgb(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})`;
+const getRandomColor = () => `rgb(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})`;
 
-const getSelectedColor = () =>
-  document.querySelector('.selected').style.backgroundColor;
+const getSelectedColor = () => document.querySelector('.selected').style.backgroundColor;
 
-const generateEmptyBoard = (size) =>
-  Array.from({ length: size }, () => 'white');
+const generateEmptyBoard = (size) => Array.from({ length: size }, () => 'white');
 
 const getBoardSize = () => getStorageItem('boardSize') || 25;
 
@@ -118,9 +110,7 @@ const drawImagem = (url, boardSize) =>
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const cellSize = Math.round(
-        Math.sqrt((img.width * img.height) / boardSize)
-      );
+      const cellSize = Math.round(Math.sqrt((img.width * img.height) / boardSize));
 
       return resolve(imageToArray(imageData, cellSize));
     };
@@ -157,11 +147,10 @@ buttonClearBoard.addEventListener('click', () => {
   changeBoard(generateEmptyBoard(getBoardSize()));
 });
 
-inputUploadImage.addEventListener('change', () =>
-  handleUploadImage(getBoardSize())
-);
+inputUploadImage.addEventListener('change', () => handleUploadImage(getBoardSize()));
 
 inputBoardSize.value = Math.sqrt(getBoardSize());
+
 colors.forEach((color) => colorPalette.appendChild(Color(color)));
 changeBoard(getBoard());
 document.querySelector('.color').classList.add('selected');
