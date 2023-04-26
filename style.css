@@ -4,7 +4,8 @@
   box-sizing: border-box;
 }
 
-body {
+:root {
+  --pink: 255, 105, 180;
 }
 
 main {
@@ -16,28 +17,62 @@ main {
   width: 1200px;
 }
 
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+button {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+button:hover,
+label:hover {
+  background-color: rgba(0, 0, 0, 1);
+  border: 1px solid;
+}
+
+label {
+  font-size: 18px;
+}
+
+button,
+label {
+  transition: background, border, 0.15s ease-in;
+  border: 1px solid transparent;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: rgb(var(--pink));
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  width: 200px;
+  height: 40px;
+  margin-bottom: 8px;
+}
+
+#title {
+  margin: 100px 0 16px;
+  padding: 22px;
+  color: rgb(var(--pink));
+  border: 5px solid;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  box-shadow: rgba(var(--pink), 0.8) 5px 6px 20px 12px;
+}
+
 #color-palette {
   display: flex;
-  height: 40px;
+  height: 50px;
   justify-content: center;
-}
-
-.color {
-  width: 40px;
-  border: 1px solid black;
-}
-
-#button-random-color {
+  margin-bottom: 16px;
+  column-gap: 2px;
 }
 
 #board-size {
   width: 40px;
   text-align: center;
-}
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-  opacity: 1;
+  margin-left: 8px;
 }
 
 #upload-image {
@@ -48,12 +83,48 @@ input[type=number]::-webkit-outer-spin-button {
   display: grid;
   height: 500px;
   width: 500px;
-  transform: rotate(90deg);
+  transform: rotate(270deg) scaleX(-1);
   overflow: hidden;
   align-items: end;
   justify-items: end;
+  border: 1px solid black;
+}
+
+.color {
+  width: 50px;
+  border: 1px solid;
+  transform: scale(1);
+  transition: transform 0.1s ease-in;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.color:hover {
+  transform: scale(1.1);
 }
 
 .pixel {
-  border: 1px solid black;
+  outline: 1px solid black;
+  cursor: url('./images/pen.svg'), auto;
+}
+
+.background {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1;
+}
+
+.label {
+  display: flex;
+  justify-items: center;
+  justify-content: space-between;
+  column-gap: 8px;
+}
+
+.label > img {
+  width: 24px;
+  height: 24px;
 }

@@ -8,13 +8,18 @@
     <title>Document</title>
   </head>
   <body>
+    <video
+    src="images/background.mp4"
+    autoplay muted loop
+    class="background"
+  ></video>
     <main>
       <h1 id="title">Paleta de Cores</h1>
       <div id="color-palette"></div>
       <button id="button-random-color">Cores aleatórias</button>
       <button id="clear-board">Limpar</button>
-      <label>Tamanho do board<input type="number" name="" id="board-size" min="5" max="50"></label>
-      <label for="upload-image">Desenhe uma imagem !</label>
+      <label class="label">Tamanho Pixel<input type="number" name="" id="board-size" min="5" max="50"></label>
+      <label class="label" for="upload-image">Upload Imagem<img src="./images/photo.svg"/></label>
       <input type="file" id="upload-image" >
       <div id="pixel-board"></div>
     </main>
