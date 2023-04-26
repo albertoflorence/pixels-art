@@ -47,6 +47,22 @@ const Color = (color) => {
   return element;
 };
 
+let isDrawing = false;
+let selectedColor;
+
+pixelBoard.addEventListener(
+  'mousedown',
+  () => {
+    selectedColor = getSelectedColor();
+    isDrawing = true;
+  },
+  true,
+);
+
+pixelBoard.addEventListener('mouseup', () => {
+  isDrawing = false;
+});
+
 const Cell = (color, saveCellColor, size) => {
   const element = document.createElement('div');
   element.classList.add('pixel');
@@ -54,11 +70,14 @@ const Cell = (color, saveCellColor, size) => {
   element.style.width = size;
   element.style.height = size;
 
-  element.addEventListener('click', () => {
-    const selectedColor = getSelectedColor();
+  const draw = () => {
+    if (!isDrawing) return;
     element.style.backgroundColor = selectedColor;
     saveCellColor(selectedColor);
-  });
+  };
+
+  element.addEventListener('mouseenter', draw);
+  element.addEventListener('mousedown', draw);
 
   return element;
 };
