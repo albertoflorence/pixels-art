@@ -13,7 +13,7 @@ main {
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
-  height: 100vh;
+  min-height: 100vh;
   width: 1200px;
 }
 
@@ -83,11 +83,11 @@ label {
   display: grid;
   height: 500px;
   width: 500px;
-  transform: rotate(270deg) scaleX(-1);
-  overflow: hidden;
+  transform: rotate(90deg);
   align-items: end;
   justify-items: end;
   border: 1px solid black;
+  margin-bottom: 50px;
 }
 
 .color {
